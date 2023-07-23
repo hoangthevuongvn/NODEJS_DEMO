@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  node_service1:
+    container_name: nodejs_16
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      - "4500:3000"
+    links:
+      - mongodb_service
+    depends_on:
+      - mongodb_service
+    environment:
+      WAIT_HOSTS: mongodb_service:27017
+    networks:
+      - node_mongo
+    # volumes:
+    #   - node_app:/app
+
+  mongodb_service:
+    container_name: mongodb
+    image: mongo:6.0
+    volumes:
+      - mongo_data:/data/db
+    # ports:
+    #   - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+      - MONGO_INITDB_DATABASE=jwt_Authen_Author
+    networks:
+      - node_mongo
+
+networks:
+  node_mongo:
+    driver: bridge
+  
+volumes:
+  mongo_data:
+  # node_app:
